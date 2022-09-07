@@ -8,6 +8,7 @@ import tweepy
 # local
 from config import CONFIG
 from storage_provider.S3_storage_provider import S3StorageProvider
+# from storage_provider.local_storage_provider import LocalStorageProvider
 
 def get_twitter_api() -> tweepy.API:
   auth = tweepy.OAuth1UserHandler(
@@ -22,4 +23,8 @@ def get_twitter_api() -> tweepy.API:
 if __name__ == '__main__':
   api = get_twitter_api()
   tweets = api.home_timeline(count=1)
-  print(tweets)
+
+  storageProvider = S3StorageProvider()
+  # storageProvider = LocalStorageProvider()
+  image = storageProvider.get_image('dami (1).jpg')
+  print(image)
