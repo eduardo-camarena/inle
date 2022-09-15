@@ -5,14 +5,22 @@ from config import CONFIG
 
 class S3StorageProvider(StorageProvider):
   def __init__(self):
-    self.session = boto3.client(
+    self.client = boto3.client(
       's3',
       aws_access_key_id=CONFIG['aws']['access_key_id'],
       aws_secret_access_key=CONFIG['aws']['secret_key']
     )
 
   def get_image(self, file_name: str):
-    return self.session.get_object(
+    return self.client.get_object(
       Bucket=CONFIG['aws']['bucket'],
       Key=file_name
     )
+
+  def list_available_images(self):
+    response = self.client.list_objects(
+      Bucket=CONFIG['aws']['bucket'],
+      Prefix=CONFIG['aws']['hourly_folder']
+    ).get('Contents', [])
+
+    return [val['Key'] for val in response]

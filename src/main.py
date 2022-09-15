@@ -38,10 +38,13 @@ if __name__ == '__main__':
         )"""
     )
 
-  api = get_twitter_api()
-  tweets = api.home_timeline(count=1)
+  # api = get_twitter_api()
+  # tweets = api.home_timeline(count=1)
 
   storageProvider = S3StorageProvider()
   # storageProvider = LocalStorageProvider()
+  # available_images = storageProvider.list_available_images()
+  # add_entities(connection, available_images)
+  print(get_random_image(connection))
 
   connection.close()
