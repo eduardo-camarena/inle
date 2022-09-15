@@ -2,15 +2,16 @@
 import os
 import json
 import sqlite3
+from time import sleep
 
 # pypi packages
+import schedule
 import tweepy
 
 # local
 from config import CONFIG
 from storage_provider.S3_storage_provider import S3StorageProvider
 from storage_provider.storage_provider_interface import StorageProvider
-# from storage_provider.local_storage_provider import LocalStorageProvider
 from database import add_entities, get_random_image
 
 connection = sqlite3.connect('hourly_bot.db')
@@ -34,6 +35,11 @@ def post_to_twitter(api: tweepy.API, storageProvider: StorageProvider) -> None:
   api.update_status(status='', media_ids=['asd'])
   os.remove(f'./{file_name}')
 
+def update_database(storageProvider: StorageProvider) -> None:
+  available_images = storageProvider.list_available_images()
+  add_entities(connection, available_images)
+  print(get_random_image(connection))
+
 if __name__ == '__main__':
   table = cursor.execute(
     "SELECT name FROM sqlite_master WHERE type='table' AND name='hourly_bot'"
@@ -50,12 +56,10 @@ if __name__ == '__main__':
   api = get_twitter_api()
 
   storageProvider = S3StorageProvider()
-  # storageProvider = LocalStorageProvider()
 
-  # available_images = storageProvider.list_available_images()
-  # add_entities(connection, available_images)
-  # print(get_random_image(connection))
+  schedule.every().hour.do(post_to_twitter, api=api, storageProvider=storageProvider)
+  schedule.every(24).hour.do(update_database, storageProvider=storageProvider)
 
-  post_to_twitter(api, storageProvider)
-
-  connection.close()
+  while True:
+    schedule.run_pending()
+    sleep(1)

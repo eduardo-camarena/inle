@@ -1,3 +1,5 @@
+from typing import List
+
 import boto3
 
 from storage_provider.storage_provider_interface import StorageProvider
@@ -20,7 +22,7 @@ class S3StorageProvider(StorageProvider):
     )
     return local_file_name
 
-  def list_available_images(self):
+  def list_available_images(self) -> List[str]:
     response = self.client.list_objects(
       Bucket=CONFIG['aws']['bucket'],
       Prefix=CONFIG['aws']['hourly_folder']

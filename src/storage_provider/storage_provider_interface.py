@@ -7,5 +7,5 @@ class StorageProvider(ABC):
     pass
 
   @abstractmethod
-  def list_available_images(self):
+  def list_available_images(self) -> List[str]:
     pass
