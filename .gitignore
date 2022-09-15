@@ -3,3 +3,5 @@
 
 **/__pycache__
 **/.env
+
+**/hourly_bot.db

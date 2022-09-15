@@ -16,6 +16,7 @@ CONFIG = {
   'aws': {
     'access_key_id': os.getenv('AWS_ACCESS_KEY_ID'),
     'secret_key': os.getenv('AWS_SECRET_KEY'),
-    'bucket': os.getenv('AWS_BUCKET')
+    'bucket': os.getenv('AWS_BUCKET'),
+    'hourly_folder': os.getenv('AWS_HOURLY_FOLDER')
   }
 }
