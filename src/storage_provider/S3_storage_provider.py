@@ -11,11 +11,14 @@ class S3StorageProvider(StorageProvider):
       aws_secret_access_key=CONFIG['aws']['secret_key']
     )
 
-  def get_image(self, file_name: str):
-    return self.client.get_object(
+  def get_image(self, file_name: str) -> str:
+    local_file_name = file_name.split('/')[1]
+    self.client.download_file(
       Bucket=CONFIG['aws']['bucket'],
-      Key=file_name
+      Key=file_name,
+      Filename=local_file_name
     )
+    return local_file_name
 
   def list_available_images(self):
     response = self.client.list_objects(

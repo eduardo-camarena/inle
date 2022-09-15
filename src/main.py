@@ -9,8 +9,12 @@ import tweepy
 # local
 from config import CONFIG
 from storage_provider.S3_storage_provider import S3StorageProvider
+from storage_provider.storage_provider_interface import StorageProvider
 # from storage_provider.local_storage_provider import LocalStorageProvider
 from database import add_entities, get_random_image
+
+connection = sqlite3.connect('hourly_bot.db')
+cursor = connection.cursor()
 
 def get_twitter_api() -> tweepy.API:
   auth = tweepy.OAuth1UserHandler(
@@ -22,10 +26,15 @@ def get_twitter_api() -> tweepy.API:
 
   return tweepy.API(auth)
 
-if __name__ == '__main__':
-  connection = sqlite3.connect('hourly_bot.db')
-  cursor = connection.cursor()
+def post_to_twitter(api: tweepy.API, storageProvider: StorageProvider) -> None:
+  storage_provider_file_name = get_random_image(connection)
+  file_name = storageProvider.get_image(storage_provider_file_name)
 
+  api.media_upload(file_name)
+  api.update_status(status='', media_ids=['asd'])
+  os.remove(f'./{file_name}')
+
+if __name__ == '__main__':
   table = cursor.execute(
     "SELECT name FROM sqlite_master WHERE type='table' AND name='hourly_bot'"
   );
@@ -38,13 +47,15 @@ if __name__ == '__main__':
         )"""
     )
 
-  # api = get_twitter_api()
-  # tweets = api.home_timeline(count=1)
+  api = get_twitter_api()
 
   storageProvider = S3StorageProvider()
   # storageProvider = LocalStorageProvider()
+
   # available_images = storageProvider.list_available_images()
   # add_entities(connection, available_images)
-  print(get_random_image(connection))
+  # print(get_random_image(connection))
+
+  post_to_twitter(api, storageProvider)
 
   connection.close()

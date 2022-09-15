@@ -3,7 +3,7 @@ from typing import List
 
 class StorageProvider(ABC):
   @abstractmethod
-  def get_image(self, file_name: str):
+  def get_image(self, file_name: str) -> str:
     pass
 
   @abstractmethod
