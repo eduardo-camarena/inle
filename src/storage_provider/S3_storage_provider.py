@@ -1,4 +1,5 @@
-from typing import List
+from typing import IO, List
+from io import BytesIO
 
 import boto3
 
@@ -13,14 +14,12 @@ class S3StorageProvider(StorageProvider):
       aws_secret_access_key=CONFIG['aws']['secret_key']
     )
 
-  def get_image(self, file_name: str) -> str:
-    local_file_name = file_name.split('/')[1]
-    self.client.download_file(
+  def get_image(self, file_name: str) -> IO:
+    img = self.client.get_object(
       Bucket=CONFIG['aws']['bucket'],
-      Key=file_name,
-      Filename=local_file_name
+      Key=file_name
     )
-    return local_file_name
+    return BytesIO(img['Body'].read())
 
   def list_available_images(self) -> List[str]:
     response = self.client.list_objects(

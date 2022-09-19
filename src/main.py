@@ -28,11 +28,11 @@ def get_twitter_api() -> tweepy.API:
   return tweepy.API(auth)
 
 def post_to_twitter(api: tweepy.API, storageProvider: StorageProvider) -> None:
-  storage_provider_file_name = get_random_image(connection)
-  file_name = storageProvider.get_image(storage_provider_file_name)
+  file_name = get_random_image(connection)
+  file = storageProvider.get_image(file_name)
 
-  api.media_upload(file_name)
-  api.update_status(status='', media_ids=['asd'])
+  api.media_upload(filename='dami.jpg', file=file)
+  api.update_status(status='', media_ids=['dami.jpg'])
   os.remove(f'./{file_name}')
 
 def update_database(storageProvider: StorageProvider) -> None:
@@ -57,8 +57,8 @@ if __name__ == '__main__':
 
   storageProvider = S3StorageProvider()
 
-  schedule.every().hour.do(post_to_twitter, api=api, storageProvider=storageProvider)
-  schedule.every(24).hour.do(update_database, storageProvider=storageProvider)
+  schedule.every().hours.do(post_to_twitter, api=api, storageProvider=storageProvider)
+  schedule.every(24).hours.do(update_database, storageProvider=storageProvider)
 
   while True:
     schedule.run_pending()

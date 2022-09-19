@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, IO
 
 class StorageProvider(ABC):
   @abstractmethod
-  def get_image(self, file_name: str) -> str:
+  def get_image(self, file_name: str) -> IO:
     pass
 
   @abstractmethod
